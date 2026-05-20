@@ -2,6 +2,13 @@
 #
 # Suraya v1.4 hardening baseline. Github Actions covered for all repos;
 # per-repo language ecosystems are appended by the bootstrap.
+#
+# 2026-05-20 — ignore semver-major bumps on github-actions group per
+# [Re] post-Shai-Hulud canon + [Ve] §B PR #2 empirical (major bumps from
+# Dependabot landed v4→v6 + v7→v9 with no logic adjustments needed but
+# generated review-noise; major Action upgrades should be operator-
+# initiated/verified after manual changelog review, not auto-PR'd).
+# Patch + minor bumps continue to flow grouped (security + bug fixes).
 
 version: 2
 updates:
@@ -13,3 +20,11 @@ updates:
       gh-actions:
         patterns:
           - "*"
+        # Group patch + minor only; major bumps surface as separate PRs
+        # which we then ignore via the ignore: rule below.
+        update-types:
+          - "patch"
+          - "minor"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
