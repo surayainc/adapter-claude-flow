@@ -31,8 +31,19 @@ describe("@surayaorg/adapter-claude-flow", () => {
   });
 
   it("formatAsContext returns a no-match string for empty results", () => {
-    const proxy = suraya.connect({ projectSlug: "test-project" });
+    // brain-sdk 0.1.0 enforces exactly-one-of {hmacSecret, bootstrapToken} at
+    // construction (fail-closed), so even pure-formatting use carries auth.
+    const proxy = suraya.connect({
+      projectSlug: "test-project",
+      hmacSecret: "test-secret",
+    });
     expect(proxy.formatAsContext([])).toContain("no observations matched");
+  });
+
+  it("connect() without auth throws (SDK exactly-one-auth contract, 0.1.0)", () => {
+    expect(() => suraya.connect({ projectSlug: "test-project" })).toThrow(
+      /exactly one of/
+    );
   });
 
   it("type stubs compile (FlowRun, FlowStep, AgentInvocation)", () => {
